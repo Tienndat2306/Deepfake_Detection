@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SENTINEL-X | Deepfake Analysis Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#ffdad6",
+                        "on-primary": "#003543",
+                        "surface-tint": "#4cd6ff",
+                        "tertiary": "#ffd2cc",
+                        "inverse-primary": "#00677f",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-fixed-variant": "#095300",
+                        "secondary": "#d7ffc5",
+                        "secondary-fixed": "#79ff5b",
+                        "on-primary-container": "#00566a",
+                        "surface-dim": "#131313",
+                        "secondary-fixed-dim": "#2ae500",
+                        "on-primary-fixed-variant": "#004e60",
+                        "on-surface-variant": "#bbc9cf",
+                        "on-secondary": "#053900",
+                        "surface-container-highest": "#353534",
+                        "outline": "#859399",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary": "#690003",
+                        "tertiary-container": "#ffaba0",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary-container": "#a20007",
+                        "inverse-surface": "#e5e2e1",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#4cd6ff",
+                        "on-secondary-container": "#0f6d00",
+                        "outline-variant": "#3c494e",
+                        "surface-container": "#201f1f",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "surface-bright": "#3a3939",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-fixed": "#b7eaff",
+                        "surface": "#131313",
+                        "on-secondary-fixed": "#022100",
+                        "tertiary-fixed": "#ffdad5",
+                        "on-primary-fixed": "#001f28",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "background": "#131313",
+                        "primary-container": "#00d1ff",
+                        "on-tertiary-fixed": "#410001",
+                        "inverse-on-surface": "#313030",
+                        "primary": "#a4e6ff",
+                        "surface-variant": "#353534",
+                        "secondary-container": "#2ff801"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .cyber-glow {
+            box-shadow: 0 0 15px rgba(0, 209, 255, 0.2);
+        }
+        .inner-glow {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131313;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c494e;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00d1ff;
+        }
+        .hud-scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 209, 255, 0.02) 50%);
+            background-size: 100% 4px;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Bar Component -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-desktop h-20 border-b border-white/10 backdrop-blur-xl bg-background/80 shadow-[0_0_15px_rgba(0,209,255,0.1)]">
+<div class="flex items-center gap-8">
+<h1 class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">DEEPFAKE-DETECTION</h1>
+<div class="hidden md:flex items-center gap-6">
+<nav class="flex gap-6">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary py-1" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-container transition-colors duration-200 py-1" href="#">Forensics</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-container transition-colors duration-200 py-1" href="#">Deepscan</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-container transition-colors duration-200 py-1" href="#">Network</a>
+</nav>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<input class="bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-4 py-2 w-64 focus:outline-none focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search hash or metadata..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/30">
+<img alt="Profile" data-alt="A professional close-up avatar of a cybersecurity expert in a high-tech setting. The character has a focused expression, wearing sleek dark technical gear. The lighting is low-key with subtle cyan and magenta rim lighting, reflecting the cyber-modern aesthetic of the dashboard. Background is softly blurred, showing hints of glowing data screens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRa8nfkI3Yham7gIPQMx2RgdSRUgEVAlSJBmyWNt6Pu3j4GTd6YBNYTTIiBGZTkpk8XQYV_9Gv1pXWOhuT5aXb_ohZWTMY3hdU_8zAOW-f3MU448UAKHSshW4hU_YoRyLs5Tpwaxmx9lIsPSjiMu6p1lGs59Nlw-Ibx4zE5O72Ao-f836mwmUWrFBLGA4y3jGYCUBcT-zc_DgSdF0s7IRJPmyRC8yPtM4pjy_IyDm8jypoT1BHTGtq4mPfAnZvVDHBPGmF0FVgiA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Side Bar Component -->
+<aside class="fixed left-0 top-20 h-[calc(100vh-80px)] w-64 flex flex-col py-6 border-r border-white/10 backdrop-blur-2xl bg-surface-container-lowest/90 z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">SECURE ANALYSIS</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Vigilance Active</p>
+</div>
+<nav class="flex-1 space-y-1 px-4">
+<a class="flex items-center gap-4 px-4 py-3 text-primary bg-primary/10 border-r-2 border-primary font-label-md text-label-md group active:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant opacity-70 hover:bg-white/5 hover:text-primary hover:opacity-100 font-label-md text-label-md transition-all" href="#">
+<span class="material-symbols-outlined">android_fingerprint</span>
+<span>Forensics</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant opacity-70 hover:bg-white/5 hover:text-primary hover:opacity-100 font-label-md text-label-md transition-all" href="#">
+<span class="material-symbols-outlined">radar</span>
+<span>Deepscan</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant opacity-70 hover:bg-white/5 hover:text-primary hover:opacity-100 font-label-md text-label-md transition-all" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>Archive</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant opacity-70 hover:bg-white/5 hover:text-primary hover:opacity-100 font-label-md text-label-md transition-all" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span>Network</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all cyber-glow">
+<span class="material-symbols-outlined">add_circle</span>
+                NEW SCAN
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-20 p-margin-desktop min-h-[calc(100vh-80px)] bg-surface">
+<!-- Header -->
+<header class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background mb-2">Deepfake Analysis Lab</h2>
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-2 text-primary-container">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary-container"></span>
+</span>
+<span class="font-label-sm text-label-sm">System: Operational</span>
+</span>
+<span class="font-label-sm text-label-sm text-outline">Session ID: SX-8821-V4</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-high border border-outline-variant px-4 py-2 flex items-center gap-2 text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">export_notes</span>
+<span class="font-label-md text-label-md">Export Report</span>
+</button>
+<button class="bg-primary text-on-primary px-4 py-2 flex items-center gap-2 hover:brightness-110 transition-colors">
+<span class="material-symbols-outlined text-sm">refresh</span>
+<span class="font-label-md text-label-md">Re-Analyze</span>
+</button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Column: Video Player area -->
+<div class="col-span-12 lg:col-span-8 space-y-gutter">
+<div class="glass-panel inner-glow relative aspect-video overflow-hidden group">
+<!-- HUD Overlay -->
+<div class="absolute inset-0 pointer-events-none hud-scanline z-10 opacity-30"></div>
+<div class="absolute top-4 left-4 z-20 flex gap-2">
+<div class="bg-black/60 px-2 py-1 rounded border border-primary/20">
+<span class="font-label-sm text-label-sm text-primary tracking-widest">REC [00:42:15]</span>
+</div>
+<div class="bg-black/60 px-2 py-1 rounded border border-primary/20">
+<span class="font-label-sm text-label-sm text-primary">FRAME: 1404</span>
+</div>
+</div>
+<div class="absolute top-4 right-4 z-20">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 text-xs font-bold uppercase tracking-widest">Live Forensics</span>
+</div>
+<!-- Video Placeholder / Player -->
+<div class="w-full h-full bg-black flex items-center justify-center relative">
+<img alt="Deepfake Analysis Video Feed" class="w-full h-full object-cover opacity-80" data-alt="A high-tech digital forensic analysis screen showing a close-up facial scan of a person. The face is overlaid with a sophisticated cyan wireframe grid and magenta heat maps highlighting physiological discrepancies. The background is dark and moody, typical of a cybersecurity laboratory. The image has a professional, cinematic feel with high technical detail and 8k resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq-nbWdYJayo0wAv3QEzjedzSBVuHlKGIgJrW8-uveIGwBMLLvt-1yjqkqVyulovr1xHQtaZnhQdfoWu1vig118nZ7gpQ62gWg0EpzZt0tRjrwhoqPHeHhbO2ufVNioapdNaj3jwQ-WVIB59nHY7whJ23LPrydsRC1gfYzaBdtlaAq_rVkpES2woQa2lYPP0q5Q8aH62yKVtPUhRcYFv6atfc5VOdOwYfXImMbWVSXwXthJoeOj3YmfjuTvlFCerPbp5AMFJDGqA"/>
+<!-- Analysis Markers -->
+<div class="absolute top-[35%] left-[45%] w-24 h-24 border-2 border-primary/40 rounded-full animate-pulse-glow flex items-center justify-center">
+<div class="w-1 h-1 bg-primary rounded-full"></div>
+</div>
+<div class="absolute bottom-[20%] right-[30%] bg-error/20 border border-error px-2 py-1 text-[10px] text-error">
+                            ARTIFACT DETECTED: [Jitter_04]
+                        </div>
+<!-- Player Controls -->
+<div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent flex flex-col gap-4">
+<div class="w-full h-1 bg-white/10 relative cursor-pointer group/bar">
+<div class="absolute left-0 top-0 h-full w-[40%] bg-primary shadow-[0_0_8px_#00d1ff]"></div>
+<div class="absolute left-[40%] top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover/bar:opacity-100 transition-opacity"></div>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex gap-6 items-center">
+<button class="material-symbols-outlined text-white hover:text-primary transition-colors">play_arrow</button>
+<button class="material-symbols-outlined text-white hover:text-primary transition-colors">skip_next</button>
+<button class="material-symbols-outlined text-white hover:text-primary transition-colors text-xl">volume_up</button>
+<span class="font-label-sm text-label-sm text-white/70">00:12:44 / 00:34:00</span>
+</div>
+<div class="flex gap-4">
+<button class="material-symbols-outlined text-white hover:text-primary transition-colors">screenshot_region</button>
+<button class="material-symbols-outlined text-white hover:text-primary transition-colors">fullscreen</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Status & Confidence Score -->
+<div class="col-span-12 lg:col-span-4 space-y-gutter">
+<!-- Status Card -->
+<div class="glass-panel inner-glow p-6 h-full flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Analysis Engine</h3>
+<span class="bg-secondary/15 text-secondary-fixed-dim px-2 py-1 text-xs font-bold rounded">ACTIVE</span>
+</div>
+<!-- Confidence Score Radial -->
+<div class="flex flex-col items-center justify-center py-8">
+<div class="relative w-48 h-48">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle class="text-white/5" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="2"></circle>
+<circle class="text-primary-container drop-shadow-[0_0_10px_rgba(0,209,255,0.4)]" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="22" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-display-lg text-display-lg text-primary leading-none">92%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1 uppercase">Confidence</span>
+</div>
+</div>
+<div class="mt-8 text-center">
+<p class="text-secondary-fixed-dim font-bold text-xl uppercase tracking-tighter mb-1">Authentic Profile</p>
+<p class="font-label-sm text-label-sm text-outline">Verified biological markers detected</p>
+</div>
+</div>
+</div>
+<!-- Micro Data -->
+<div class="space-y-4 border-t border-white/5 pt-6">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Frame Rate Consistency</span>
+<span class="font-label-md text-label-md text-primary">99.8%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Artifact Density</span>
+<span class="font-label-md text-label-md text-error">Low</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Metadata Signature</span>
+<span class="font-label-md text-label-md text-primary">MATCH</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Extracted Keyframes -->
+<div class="col-span-12">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Extracted Keyframes</h3>
+<span class="text-xs text-outline bg-surface-container-high px-2 py-0.5">8 Segments Identified</span>
+</div>
+<button class="text-primary font-label-sm text-label-sm flex items-center gap-1 hover:underline">
+                        View All Frames <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 scroll-smooth">
+<!-- Keyframe Items -->
+<div class="flex-none w-48 group cursor-pointer">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A detailed digital keyframe showing a person's eye in extreme close-up for iris pattern verification. The image features high-contrast lighting with technical data overlays in cyan, indicating biometric analysis points. The aesthetic is clean and surgical, fitting a forensic tool's interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMso_zkNyMbTv6_7RhL-FXxWJ5OlpmBuqvakeSVYL83DQ7PmCwIvrhEYG3D1V8mrbc0k5r7Qp26SwUKdpyt8jnLbp7H2KdLdJhfxovb7s2f0iTrx5z26r1gb4-IpBUJrqgZt0lN8SjpVa0Ngf4mAxriMVrSv5fVVMOIfwM7rMXdvx1LMzKYaixMTshdRsUlZ4PKVo7OFvixW56YToYUy1i1CnBq_Q7nGEzSVOI2ugs7Kr1agE7OHQoUucpoR6_eWkuobQF6AtaHw"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-outline flex justify-between">
+<span>F: 0212</span>
+<span class="text-primary">98.4%</span>
+</p>
+</div>
+<div class="flex-none w-48 group cursor-pointer">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A forensic keyframe capture focusing on facial micro-expressions. The subject is a woman under neutral laboratory lighting. Digital crosshairs and measurement markers in neon green are visible across her features, suggesting an analysis of involuntary muscle movements. The style is sharp and data-driven." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM4OBEGHih_6zcIxbzSDGIhzS9Im1FWlaPJr02R3SjPQDmm3Za8xHOlFOkMm6korlz6h4s3QAiDwF8vdmoCf4NLKGA-Ee4Cm-ePUv03xTNLmDbNj3jn_PZxhJHsR-3ZreUXjYa9pn5I9x3L1mm3CA5GNxR01Qbe2a5XHUf5C1gBXh9HTHuW-HBgS2GIm1zXvpeEoXgiQtELytliLvOF2t-PTH7yd0WOdFk08PkRwzrlC2KyAERDne_pji7_-okeDIeb5d1kiFp-A"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-outline flex justify-between">
+<span>F: 0340</span>
+<span class="text-primary">97.1%</span>
+</p>
+</div>
+<div class="flex-none w-48 group cursor-pointer border border-error/50">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale" data-alt="A forensic analysis frame highlighting a potential deepfake artifact around the mouth area of a subject. A red diagnostic circle surrounds the lip region with accompanying warning text labels in a monospace font. The lighting is cold and clinical, emphasizing the discrepancy in digital rendering. High tech UI elements are layered over the image." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGEjeFKVge3FR_WECd-2DQ9qI0IL2XPvGzTk_o5ZCiBVV-geFw4qClB3-7VwbPOUrHHWbj4xF1bOqyv6O0zmr5UA3QjJRvrhqWaL_RtCx6ACpxOXjjPT4jilWaHrqFwsm-JubphHqWcwGJ0hUC2bTSHQCykVa5L5d4eRSNur7vpQ4byykyQESZ3j_fz0-Ic8FXCNW2epWRxpOq_Hjg0f1lJdlSdeI-XX-mK1Xfd8iFAm93v1vWSVd5SG3mJQq6Wbweb33ro2MV9Q"/>
+<div class="absolute inset-0 bg-error/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">warning</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-error flex justify-between">
+<span>F: 0588</span>
+<span>ALERT</span>
+</p>
+</div>
+<div class="flex-none w-48 group cursor-pointer">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 4" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Forensic capture of skin texture and pore consistency analysis. The image is a macro shot of a cheek area under specialized ultraviolet lighting that reveals subtle digital dithering or smoothing. Cyan data points highlight areas of high biological fidelity. The style is high-end digital forensics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkpsveZKAtdyRH6HdBXr-ERi1sjr8itPvDo3-GCUWqgZzrieuTb4Qtlg-TtD3nyMEHPhq4ipZePoH_fEX6-QlWXw30opBcNcUIqnqMQfputEo65gWduV2QXKctE15TA9sWleWO7W76lpPAfzdJOGZleI6G5x70HeG7VHUf-CCYQ41ZmQ7J44g5v6qavXbRbPGGtc4k9733_12F9efaCTZtBEDTNIArjAMtZwGQ1yvrbC-evBzPCV2urMK1If8o028kyD7o9L4h-Q"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-outline flex justify-between">
+<span>F: 0712</span>
+<span class="text-primary">94.2%</span>
+</p>
+</div>
+<div class="flex-none w-48 group cursor-pointer">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 5" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Analysis frame of a person's neck and throat during speech. The forensic scan monitors physiological pulses and carotid artery movement. Bright cyan pulses represent detected heart rates. The visual is dark with glowing neon forensic elements, maintaining the high-tech cybersecurity theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFeMJAnSznALLXVxj55Z5aPKVGZLYRI28XCeHQSI4zcwWJU8elwQwGkHgDRMdnxPsUBv9VKJouZNPZkUdXyAREJTxPoWoIo2Yju8FVojA2qIRL0WZ7gHBMQ0cYuj-0YDEhB05_z2nLT_qviTwhS-eeOCeulI5Ix-VO-I6B48WdHro4vxy_q9jKdKmcGPKJaUsRQKgzL-o0U64pvtL8cjpLuxkic_533pA5pnocgbPZqvUyKpMJWvwA0i0wuQREi19dFapEy96v_Q"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-outline flex justify-between">
+<span>F: 0924</span>
+<span class="text-primary">99.0%</span>
+</p>
+</div>
+<div class="flex-none w-48 group cursor-pointer">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 6" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A keyframe focused on hair-line and facial boundary blending. The analysis tool uses edge-detection algorithms visualized as thin magenta lines where the face meets the background. Any blurring or inconsistencies are flagged. The aesthetic is sophisticated and technically precise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZsM6DtiEKKxphtBK5j9D03F9e5pPLXrXYBZek83ygOBH-2B5Tt2c2uXRQRE5lH3cUnCn1QwESAv_64xBlRGHwerJ8NanxG0ANd6gKN0D3AqexfelPG3bqshjqkcXJiLPAXPbz52BqvKcOWyDITJx9cJdMAE0NuqQv2lNAI0pTm43WmYx9HhjGNyV-znfWaH748iIZuabdJVQnW_dZC1sfqVcsx1lgSzyxylBF8OjgakRXhtt9slh_LRoNAANkC2LHZ8ucNs3KlQ"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-outline flex justify-between">
+<span>F: 1105</span>
+<span class="text-primary">96.8%</span>
+</p>
+</div>
+<div class="flex-none w-48 group cursor-pointer">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 7" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Forensic capture of environmental light reflection in the subject's eyes. The analysis compares the light source in the room with the reflections on the cornea. Technical diagrams of light rays are overlaid in white and cyan. The image is sharp and clinical." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjQHoEFK0x0p9B1vMTIji_pBAJdeShifp4Z4b7GAdOQ547qaVuPm6A3tU3pp2T62EgQwNAGKiWKMuq2p4xSjBJB4rIemYAXio6obB_h79TKGK8tofZAIsfWJ8f6NBT8Jcr4-u_yUreKzVZaS2FYXLlmIIbbqaha2ywFGEYAH7Su3Byd5vbtr5AxIb0rdEEid-22-QVvzCM6REgDmGQL2Qx2KsguLhJNOOOzIrC0wF3RJCfqY-Fg5HOFfAtRCJZRSh0hl5LYMwc4A"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-outline flex justify-between">
+<span>F: 1242</span>
+<span class="text-primary">92.5%</span>
+</p>
+</div>
+<div class="flex-none w-48 group cursor-pointer">
+<div class="aspect-video glass-panel overflow-hidden relative mb-2">
+<img alt="Keyframe 8" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Analysis frame of synchronous audio-visual movement. Monospace technical text at the bottom shows timing offsets between lip movement and speech audio peaks. The scene is lit with cool blue light, highlighting the forensic analysis being performed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsklD_xVlQeVRnBNSPso9VgBnKGADIlaA-OrWSTUaCMz6sx8cuoFB1nsDOJnG3Lm6B7TtJmgqH-j8MdklmHEKNlbGAXo4gzfdozc9a6KJcpJxGs6_tGln0OSMoQPbNZu5SKgjpzocVgIudWIbvnIq_1FyufJZfty_2uqLy8AWwDjOFDVztrXj7Hn2oxaPPAlg-nSze_whPs8wmiCTC5vU691YM3QHY-ZhgJS04mIlm80dWG--oN8RWyr5AO_Fxr37lJAaopdFV1g"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-outline flex justify-between">
+<span>F: 1404</span>
+<span class="text-primary">91.3%</span>
+</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions and atmospheric effects
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = document.querySelector('.glass-panel.aspect-video');
+            
+            // Subtle parallax on the video player on hover
+            player.addEventListener('mousemove', (e) => {
+                const { left, top, width, height } = player.getBoundingClientRect();
+                const x = (e.clientX - left) / width - 0.5;
+                const y = (e.clientY - top) / height - 0.5;
+                
+                const img = player.querySelector('img');
+                img.style.transform = `scale(1.05) translate(${x * 10}px, ${y * 10}px)`;
+            });
+
+            player.addEventListener('mouseleave', () => {
+                const img = player.querySelector('img');
+                img.style.transform = `scale(1) translate(0, 0)`;
+            });
+
+            // Simulate scanning noise/glitch
+            setInterval(() => {
+                const scanline = document.querySelector('.hud-scanline');
+                if(scanline) {
+                    scanline.style.opacity = (Math.random() * 0.1 + 0.2).toString();
+                }
+            }, 100);
+        });
+    </script>
+</body></html>

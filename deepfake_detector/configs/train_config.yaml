@@ -1,0 +1,73 @@
+# Cau hinh tong the cho qua trinh train
+experiment:
+  name: "dfdc_efficientnet_transformer_v1"
+  seed: 42
+  deterministic: true             # torch.backends.cudnn.deterministic
+
+data:
+  train_dir: "/root/ai_env/deepfake_detector/processed_faces/train"
+  val_dir:   "/root/ai_env/deepfake_detector/processed_faces/val"
+  test_dir:  "/root/ai_env/deepfake_detector/processed_faces/test"
+  val_split: 0.0                  # da co val set rieng, khong auto split tu train
+  auto_split: false
+  num_clips_eval: 3               # so clips dung cho val/test inference
+  # [FIX-BUG-6b] sampling_mode cho train clip selection:
+  #   "uniform"     : linspace pick qua toan bo sparse frames (KHUYEN DUNG voi pipeline hien tai).
+  #                   Phu hop vi preprocess da luu sparse frames (khong lien tiep trong video goc).
+  #                   Model hoc spatial features tu cac keyframe trai deu theo thoi gian.
+  #   "consecutive" : random window lien tiep trong sparse frames da luu.
+  #                   CHU Y: "consecutive" o day KHONG co nghia la consecutive frames goc -
+  #                   chi la consecutive trong tap sparse frames da preprocess.
+  #                   Chi co loi khi num_frames_preprocess >> num_frames_model (nhieu sparse frames).
+  #                   Neu muon temporal thuc su, phai preprocess lai voi consecutive frame saving.
+  sampling_mode: "uniform"
+  num_workers: 8
+  # [FIX B3] workers rieng cho val/test multi-clip (I/O nang hon train).
+  eval_num_workers: 12
+  pin_memory: true
+  prefetch_factor: 2
+
+training:
+  batch_size: 64
+
+  num_epochs: 50
+  precision: 16                   # fp16 AMP
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 1      # gradient accumulation khi GPU nho thi la 2
+  patience: 20                     # early stopping
+  min_delta: 0.0005                # improvement toi thieu de tinh la cai thien
+
+optimizer:
+  name: "AdamW"
+  lr_backbone: 5.0e-6             # tăng theo sqrt(64/16) = 2x
+  lr_head: 5.0e-5                 # giảm 4x
+  weight_decay: 0.01
+  betas: [0.9, 0.999]
+
+scheduler:
+  name: "CosineAnnealingLR"
+  T_max: 50                       # = num_epochs
+  eta_min: 1.0e-7                 # learning rate toi thieu
+  warmup_epochs: 3                # linear warmup truoc khi cosine
+
+loss:
+  name: "FocalLossWithSmoothing"
+  gamma: 2.0
+  alpha: 0.5                      # [FIX-BUG-7]
+  smoothing: 0.1
+
+checkpoint:
+  save_dir: "/root/ai_env/deepfake_detector/checkpoints"
+  save_top_k: 3                   # giu 3 checkpoint tot nhat
+  monitor: "val_auc"
+  mode: "max"
+  save_last: true
+
+logging:
+  use_wandb: false                # bat khi co account W&B
+  wandb_project: "deepfake-detector"
+  log_every_n_steps: 10
+
+hardware:
+  gpus: 1
+  strategy: "auto"                # "ddp" neu multi-GPU

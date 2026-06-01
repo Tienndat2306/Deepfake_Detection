@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Deepfake Detector{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="hero">
+        <div>
+            <p class="eyebrow">Video Forensics Workspace</p>
+            <h1>Deepfake Analysis Lab</h1>
+        </div>
+        <div class="status-card">
+            <span class="status-dot"></span>
+            <div>
+                <strong id="system-status">READY</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <section class="panel upload-panel">
+            <div class="panel-head">
+                <div>
+                    <h2>INPUT VIDEO</h2>
+                    <p>Supports MP4, AVI, MOV, MKV, WEBM.</p>
+                </div>
+            </div>
+
+            <form id="analyze-form" class="upload-box">
+                <input id="video-input" name="video" type="file" accept="video/*" hidden>
+                <button id="choose-file" type="button" class="file-button">
+                    <span>Upload</span>
+                </button>
+                <div class="file-meta">
+                    <p id="file-name">No file chosen</p>
+                    <p id="file-size"></p>
+                </div>
+                <button id="analyze-button" type="submit" class="primary-button" disabled>Analyze</button>
+            </form>
+
+            <div class="video-stage">
+                <video id="video-preview" controls playsinline></video>
+                <div id="empty-preview" class="empty-preview">Video preview</div>
+            </div>
+        </section>
+
+        <section class="panel result-panel">
+            <div class="panel-head">
+                <div>
+                    <h2>RESULT</h2>
+                </div>
+                <span id="verdict-pill" class="pill neutral">WAITING</span>
+            </div>
+
+            <div class="score-grid">
+                <div class="score-card main-score">
+                    <small>Fake probability</small>
+                    <strong id="fake-score">--</strong>
+                    <div class="meter">
+                        <span id="fake-meter"></span>
+                    </div>
+                </div>
+                <div class="score-card">
+                    <small>Real probability</small>
+                    <strong id="real-score">--</strong>
+                </div>
+                <div class="score-card">
+                    <small>Confidence</small>
+                    <strong id="confidence-score">--</strong>
+                </div>
+            </div>
+
+            <dl class="metadata">
+                <div><dt>Frames</dt><dd id="meta-frames">--</dd></div>
+                <div><dt>Resolution</dt><dd id="meta-resolution">--</dd></div>
+                <div><dt>Duration</dt><dd id="meta-duration">--</dd></div>
+            </dl>
+        </section>
+    </div>
+
+    <section class="panel frames-panel">
+        <div class="panel-head">
+            <div>
+                <h2>EXTRACTED KEYFRAMES</h2>
+            </div>
+        </div>
+        <div id="keyframes" class="keyframes">
+            <div class="empty-frames">No keyframes extracted!</div>
+        </div>
+    </section>
+
+    <div id="frame-modal" class="frame-modal" hidden>
+        <button id="frame-modal-close" class="frame-modal-close" type="button" aria-label="Close enlarged frame">x</button>
+        <figure class="frame-modal-content">
+            <img id="frame-modal-image" src="" alt="">
+            <figcaption id="frame-modal-caption"></figcaption>
+        </figure>
+    </div>
+</section>
+{% endblock %}

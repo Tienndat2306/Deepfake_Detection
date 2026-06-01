@@ -1,0 +1,49 @@
+<div class="glass-panel inner-glow p-6">
+    <div class="flex justify-between items-start mb-6">
+        <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
+            Analysis Engine
+        </h3>
+        <span class="bg-secondary/15 text-secondary-fixed-dim px-2 py-1 text-xs font-bold rounded">
+            {{ engine_status }}
+        </span>
+    </div>
+    
+    <!-- Confidence Score Radial -->
+    <div class="flex flex-col itemsF-center justify-center py-8">
+        <div class="relative w-48 h-48">
+            <svg class="w-full h-full -rotate-90">
+                <circle cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="2" class="text-white/5"></circle>
+                <circle cx="50" cy="50" fill="none" r="45" stroke="currentColor" 
+                        stroke-dasharray="283" stroke-dashoffset="22" stroke-width="8"
+                        class="text-primary-container drop-shadow-[0_0_10px_rgba(0,209,255,0.4)]">
+                </circle>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span id="confidence-percent" class="font-display-lg text-display-lg text-primary leading-none">92%</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant mt-1 uppercase">Confidence</span>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <p id="verdict-text" class="text-secondary-fixed-dim font-bold text-xl uppercase tracking-tighter mb-1">
+                Authentic Profile
+            </p>
+            <p class="font-label-sm text-label-sm text-outline">Verified biological markers detected</p>
+        </div>
+    </div>
+    
+    <!-- Micro Data -->
+    <div class="space-y-4 border-t border-white/5 pt-6">
+        <div class="flex justify-between items-center">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Frame Rate Consistency</span>
+            <span id="frame-rate" class="font-label-md text-label-md text-primary">99.8%</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Artifact Density</span>
+            <span id="artifact-density" class="font-label-md text-label-md text-error">Low</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">Metadata Signature</span>
+            <span id="metadata-signature" class="font-label-md text-label-md text-primary">MATCH</span>
+        </div>
+    </div>
+</div>

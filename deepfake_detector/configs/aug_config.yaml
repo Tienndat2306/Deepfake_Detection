@@ -1,0 +1,57 @@
+# Augmentation config tach rieng khoi train_config.
+
+preprocess:
+  crop_margin: 0.3
+  target_size: 256
+  min_face_confidence: 0.6
+  min_face_size_ratio: 0.01      # bo qua mat qua nho (< 5% dien tich frame)
+
+# [FIX B1] Cau truc chuan de train.py/augmentation.py doc truc tiep.
+augmentation:
+  horizontal_flip_p: 0.5
+
+  RandomBrightnessContrast:
+    brightness_limit: 0.35
+    contrast_limit: 0.35
+    p: 0.6
+
+  color_jitter:
+    brightness: 0.15
+    contrast: 0.15
+    saturation: 0.1
+    hue: 0.0
+    p: 0.8
+
+  gaussian_blur:
+    blur_limit: [3, 7]
+    p: 0.3
+
+  gaussian_noise:
+    var_limit: [10, 50]
+    p: 0.2
+
+  # JPEG compression augmentation dac biet quan trong voi deepfake detection:
+  # deepfake artifacts thuong bi lo ro hon sau pipeline nen/luu lai JPEG.
+  # Mo phong nhieu muc quality giup model robust hon voi du lieu thuc te
+  # (social media re-encode, upload/download, trich xuat khung hinh).
+  jpeg_compression:
+    quality_lower: 60
+    quality_upper: 100
+    p: 0.3
+
+  random_grayscale_p: 0.05
+
+  coarse_dropout:
+    max_holes: 4
+    max_height: 32
+    max_width: 32
+    p: 0.2
+
+val_augmentation:
+  # Chi resize + normalize, khong dung random augment de danh gia on dinh.
+  resize:
+    image_size: 256
+    resize_scale: 1.14
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]

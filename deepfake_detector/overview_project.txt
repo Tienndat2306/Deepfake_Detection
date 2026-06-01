@@ -1,0 +1,379 @@
+Tổng Quan Thư Mục
+
+  deepfake_detector/
+    configs/       Cấu hình train, model, augmentation/preprocess
+    data/          Dataset, augmentation, DataModule
+    preprocess/    Xử lý video thành ảnh khuôn mặt
+    models/        Kiến trúc neural network
+    training/      Train loop, loss, entrypoint train
+    evaluation/    Đánh giá model, metrics, plot, failure analysis
+    notebooks/     Notebook thao tác từng bước
+    checkpoints/   Checkpoint model đã train
+    dataset/       Dataset chia train/val/test theo Real/Fake
+    app/           Khung app web, hiện gần như rỗng
+    .claude/       Skill/hướng dẫn cho Claude
+
+  Root Files
+
+  ┌────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ File                       │ Công việc                                                                                   │
+  ├────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ AGENTS.md                  │ Chỉ trỏ tới RTK.md, là hướng dẫn cho agent khi làm việc trong repo.                         │
+  │ RTK.md                     │ Yêu cầu shell command prefix bằng rtk; hiện máy này không nhận lệnh rtk trong PATH.         │
+  │ HANDOVER.md                │ Tài liệu bàn giao tổng quan dự án, flow xử lý, file map, rủi ro kỹ thuật.                   │
+  │ requirements.txt           │ Khai báo thư viện: PyTorch, timm, albumentations, OpenCV, MediaPipe, sklearn, notebook      │
+  │                            │ tools.                                                                                      │
+  │ app.py                     │ File rỗng, có vẻ để dành cho app/API nhưng chưa implement.                                  │
+  │ __init__.py                │ File rỗng để root có thể được xem như Python package.                                       │
+  │ clean_processed_dataset.py │ Script audit/clean dataset đã preprocess: tìm ảnh đen, blur, low-std, no-face, frame dư; có │
+  │                            │ scan song song và xoá song song.                                                            │
+  │ resplit_dataset.py         │ Script gom dữ liệu hiện có rồi chia lại train/val/test theo class, hỗ trợ dry-run và swap   │
+  │                            │ thư mục.                                                                                    │
+  │ check_data_leakage.sh      │ Bash script kiểm tra ID Fake bị trùng giữa train và val.                                    │
+  │ fix_output_full_dump.md    │ Log/tài liệu dài về quá trình sửa lỗi/output trước đó.                                      │
+  └────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  configs/
+
+  ┌───────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ File              │ Công việc                                                                                            │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ train_config.yaml │ Cấu hình training: path train/val/test, batch size, epoch, optimizer AdamW, scheduler cosine, focal  │
+  │                   │ loss, checkpoint, workers, GPU.                                                                      │
+  │ model_config.yaml │ Cấu hình model EfficientNet + Transformer: backbone, d_model, số layer, positional encoding, input   │
+  │                   │ size, variants lightweight/full.                                                                     │
+  │ aug_config.yaml   │ Cấu hình preprocess và augmentation: crop margin, target size, face confidence, flip, color jitter,  │
+  │                   │ blur, noise, JPEG compression, normalize.                                                            │
+  └───────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  data/
+
+  ┌─────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ File            │ Công việc                                                                                              │
+  ├─────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ dataset.py      │ Định nghĩa DeepfakeDataset: mỗi folder video là một sample; label Real=0, Fake=1; train trả 1 clip     │
+  │                 │ [T,C,H,W], val/test trả multi-clip [N,T,C,H,W].                                                        │
+  │ augmentation.py │ Xây pipeline Albumentations cho frame/clip; giữ spatial transform nhất quán giữa các frame trong cùng  │
+  │                 │ clip; normalize theo ImageNet.                                                                         │
+  │ datamodule.py   │ DeepfakeDataModule kiểu PyTorch Lightning; tạo train/val/test loader, stratified split, group split    │
+  │                 │ tránh leakage, weighted sampler.                                                                       │
+  │ __pycache__/... │ File bytecode Python sinh tự động khi chạy code, không phải source chính.                              │
+  └─────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  preprocess/
+
+  ┌──────────────────────────────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+  │ File                                 │ Công việc                                                                         │
+  ├──────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+  │ video_utils.py                       │ Hàm tiện ích video: list video, đọc metadata, đếm frame, sample frame index, đọc  │
+  │                                      │ frame theo index, kiểm tra video lỗi.                                             │
+  │ face_detector.py                     │ Wrapper MediaPipe BlazeFace: detect mặt, lấy bbox/confidence, crop mặt, align/    │
+  │                                      │ crop, xử lý fallback khi frame nhỏ/confidence thấp.                               │
+  │ preprocess.py                        │ CLI chính để preprocess video thành ảnh mặt .jpg; hỗ trợ resume bằng .done.json,  │
+  │                                      │ multiprocessing, ghi atomic qua temp folder.                                      │
+  │ models/blaze_face_short_range.tflite │ Model MediaPipe BlazeFace dùng để detect mặt.                                     │
+  │ __pycache__/...                      │ Bytecode Python sinh tự động.                                                     │
+  └──────────────────────────────────────┴───────────────────────────────────────────────────────────────────────────────────┘
+
+  models/
+
+  ┌─────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ File                │ Công việc                                                                                          │
+  ├─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ efficientnet.py     │ EfficientNetExtractor: dùng timm.create_model tạo EfficientNet-B4 làm backbone trích feature       │
+  │                     │ frame, có freeze/unfreeze.                                                                         │
+  │ pos_encoding.py     │ Positional encoding theo thời gian cho chuỗi frame; có TemporalPositionalEncoding và               │
+  │                     │ RelativePositionBias1D.                                                                            │
+  │ transformer_head.py │ TransformerHead: project feature frame sang d_model, thêm CLS token, chạy Transformer encoder,     │
+  │                     │ xuất logit deepfake.                                                                               │
+  │ deepfake_model.py   │ DeepfakeDetector: ghép EfficientNetExtractor + TransformerHead; forward input [B,T,C,H,W]; có      │
+  │                     │ optimizer groups và save/load checkpoint.                                                          │
+  │ __pycache__/...     │ Bytecode Python sinh tự động.                                                                      │
+  └─────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  training/
+
+  ┌─────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ File            │ Công việc                                                                                              │
+  ├─────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ loss.py         │ FocalLossWithSmoothing: binary focal loss + label smoothing, có hook consistency loss nhưng mặc định   │
+  │                 │ tắt.                                                                                                   │
+  │ trainer.py      │ Training loop PyTorch thuần: AMP, gradient accumulation, clip gradient, validation multi-clip, early   │
+  │                 │ stopping, lưu top-k checkpoint.                                                                        │
+  │ train.py        │ Entrypoint train: load YAML config, tạo dataset/dataloader, model, optimizer, scheduler, criterion,    │
+  │                 │ resume checkpoint, gọi Trainer.fit().                                                                  │
+  │ __pycache__/... │ Bytecode Python sinh tự động.                                                                          │
+  └─────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  evaluation/
+
+  ┌─────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ File            │ Công việc                                                                                              │
+  ├─────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ metrics.py      │ Tính metric: AUC ROC, EER, AP, accuracy, precision, recall, F1; vẽ ROC curve và confusion matrix.      │
+  │ evaluate.py     │ Entrypoint evaluate: load checkpoint, chạy inference multi-clip/TTA, tune threshold trên val, đánh giá │
+  │                 │ test, xuất JSON/CSV/PNG.                                                                               │
+  │ __pycache__/... │ Bytecode Python sinh tự động.                                                                          │
+  └─────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  notebooks/
+
+  ┌─────────────────────┬───────────────────────────────────────────────────────────────────────────────────────┐
+  │ File                │ Công việc                                                                             │
+  ├─────────────────────┼───────────────────────────────────────────────────────────────────────────────────────┤
+  │ 01_preprocess.ipynb │ Notebook chạy/thử pipeline preprocess, test detector, validate output, clean output.  │
+  │ 02_eda.ipynb        │ EDA dataset: phân bố class, chất lượng ảnh, temporal consistency, distribution shift. │
+  │ 03_train.ipynb      │ Notebook train/demo local: tạo dataset/model, chạy loop train, plot.                  │
+  │ 04_evaluate.ipynb   │ Notebook đánh giá checkpoint: metrics, ROC, confusion matrix, error analysis, TTA.    │
+  │ 05_inference.ipynb  │ Demo inference video đơn lẻ hoặc batch folder, preprocess in-memory.                  │
+  └─────────────────────┴───────────────────────────────────────────────────────────────────────────────────────┘
+
+  checkpoints/
+
+  ┌────────────────────────────────────────────────────────────────┬─────────────────────────────────────────────────────┐
+  │ File                                                           │ Công việc                                           │
+  ├────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────┤
+  │ dfdc_efficientnet_transformer_v1_best_epoch001_auc0_660690.pth │ Checkpoint model epoch 1, AUC khoảng 0.660690.      │
+  │ dfdc_efficientnet_transformer_v1_best_epoch033_auc0_975090.pth │ Checkpoint tốt ở epoch 33, AUC khoảng 0.975090.     │
+  │ dfdc_efficientnet_transformer_v1_best_epoch034_auc0_976019.pth │ Checkpoint tốt ở epoch 34, AUC khoảng 0.976019.     │
+  │ dfdc_efficientnet_transformer_v1_best_epoch038_auc0_976999.pth │ Checkpoint tốt nhất hiện thấy, AUC khoảng 0.976999. │
+  └────────────────────────────────────────────────────────────────┴─────────────────────────────────────────────────────┘
+
+  dataset/
+
+  ┌────────────────────────┬─────────────────────────────────────────────────┐
+  │ Thư mục                │ Công việc                                       │
+  ├────────────────────────┼─────────────────────────────────────────────────┤
+  │ train/Real, train/Fake │ Ảnh khuôn mặt đã preprocess cho tập train.      │
+  │ val/Real, val/Fake     │ Ảnh khuôn mặt đã preprocess cho tập validation. │
+  │ test/Real, test/Fake   │ Ảnh khuôn mặt đã preprocess cho tập test.       │
+  └────────────────────────┴─────────────────────────────────────────────────┘
+
+  app/
+
+  ┌─────────────────┬───────────────────────────────────────────────────────────┐
+  │ Thư mục/File    │ Công việc                                                 │
+  ├─────────────────┼───────────────────────────────────────────────────────────┤
+  │ app/static/css/ │ Thư mục CSS cho app web, hiện chưa có file.               │
+  │ app.py ở root   │ File app chính nhưng hiện rỗng, chưa có Flask/FastAPI/UI. │
+  └─────────────────┴───────────────────────────────────────────────────────────┘
+
+  .claude/
+
+  ┌────────────────────────────────────────────────┬─────────────────────────────────────────────────────────────────────────┐
+  │ File                                           │ Công việc                                                               │
+  ├────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────┤
+  │ .claude/skills/deepfake-data-pipeline/SKILL.md │ Hướng dẫn cho agent khi sửa data pipeline, dataset, augmentation,       │
+  │                                                │ DataModule.                                                             │
+  │ .claude/skills/deepfake-model-eval/SKILL.md    │ Hướng dẫn cho agent khi sửa model/evaluation/metrics.                   │
+  │ .claude/skills/deepfake-training/SKILL.md      │ Hướng dẫn cho agent khi sửa training loop, loss, optimizer, scheduler.  │
+  └────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────┘
+
+  Tóm lại, entrypoint quan trọng nhất là:
+
+  - Preprocess: preprocess/preprocess.py
+  - Train: training/train.py
+  - Evaluate: evaluation/evaluate.py
+  - Model chính: models/deepfake_model.py
+  - Dataset chính: data/dataset.py
+
+Luồng chính của dự án này là pipeline phát hiện deepfake theo video, đi từ video gốc -> khuôn mặt đã crop -> model sequence-frame -> checkpoint
+  -> đánh giá -> web inference.
+
+  1. Chuẩn bị dữ liệu
+
+  Video gốc được xử lý bởi preprocess/preprocess.py.
+
+  Luồng:
+
+  Video gốc
+  -> sample frame đều theo thời gian
+  -> detect mặt bằng MediaPipe BlazeFace
+  -> align/crop khuôn mặt
+  -> resize về kích thước input model
+  -> lưu thành ảnh .jpg theo từng video
+
+  Output dataset có dạng:
+
+  dataset/
+    train/
+      Real/<video_id>/*.jpg
+      Fake/<video_id>/*.jpg
+    val/
+      Real/<video_id>/*.jpg
+      Fake/<video_id>/*.jpg
+    test/
+      Real/<video_id>/*.jpg
+      Fake/<video_id>/*.jpg
+
+  Mỗi thư mục video là một sample. Model không học trực tiếp từ file video, mà học từ chuỗi frame khuôn mặt đã được preprocess.
+
+  2. Dataset và augmentation
+
+  File chính: data/dataset.py, data/augmentation.py.
+
+  Khi train:
+
+  DeepfakeDataset
+  -> đọc folder video
+  -> chọn T frame, ví dụ 10 frame
+  -> augmentation ảnh
+  -> trả về tensor [T, C, H, W]
+
+  Khi validation/test:
+
+  DeepfakeDataset
+  -> tạo nhiều clip từ cùng một video
+  -> trả về [N, T, C, H, W]
+
+  Tức là train học theo clip, còn evaluate thường lấy nhiều clip trong một video rồi gộp score lại.
+
+  3. Kiến trúc model
+
+  File chính: models/deepfake_model.py.
+
+  Model là:
+
+  EfficientNet-B4 backbone
+  + Transformer temporal head
+  + binary classifier
+
+  Forward pass:
+
+  Input: [B, T, C, H, W]
+
+  -> reshape thành [B*T, C, H, W]
+  -> EfficientNet trích feature từng frame
+  -> reshape lại [B, T, feature_dim]
+  -> Transformer học quan hệ thời gian giữa các frame
+  -> classifier xuất logit Fake/Real
+  -> sigmoid(logit) = xác suất Fake
+
+  Ý tưởng chính: EfficientNet nhìn từng khuôn mặt, Transformer nhìn sự bất thường theo chuỗi thời gian.
+
+  4. Training
+
+  Entrypoint chính: training/train.py.
+
+  Luồng training:
+
+  load configs/train_config.yaml
+  + configs/model_config.yaml
+  + configs/aug_config.yaml
+
+  -> tạo train/val dataset
+  -> tạo DataLoader
+  -> tạo DeepfakeDetector
+  -> optimizer AdamW
+  -> scheduler warmup + cosine
+  -> loss FocalLossWithSmoothing
+  -> Trainer.fit()
+
+  Trong training/trainer.py, mỗi epoch chạy:
+
+  train_one_epoch()
+  -> forward
+  -> loss
+  -> backward
+  -> gradient clipping / AMP nếu có GPU
+  -> optimizer step
+
+  validate()
+  -> chạy trên validation set
+  -> tính AUC/F1/metrics
+  -> lưu checkpoint nếu tốt hơn
+  -> early stopping nếu không cải thiện
+
+  Checkpoint được lưu trong checkpoints/, ví dụ hiện repo có checkpoint tốt khoảng AUC 0.976999.
+
+  5. Evaluation
+
+  Entrypoint chính: evaluation/evaluate.py.
+
+  Luồng evaluate:
+
+  load checkpoint tốt nhất
+  -> load val/test dataset
+  -> chạy inference nhiều clip mỗi video
+  -> optional TTA
+  -> tune threshold trên validation
+  -> đánh giá test
+  -> xuất metrics/plot/report
+
+  Metrics gồm:
+
+  AUC
+  EER
+  Average Precision
+  Accuracy
+  Precision
+  Recall
+  F1
+  Confusion matrix
+  ROC curve
+  Failure analysis
+
+  Đây là bước kiểm tra model trước khi đem đi demo hoặc deploy.
+
+  6. Inference thực tế / web app
+
+  Phần triển khai hiện tại nằm ở Flask app:
+
+  app.py
+  -> app/__init__.py
+  -> app/routes.py
+  -> app/inference.py
+
+  Luồng khi người dùng upload video:
+
+  POST /api/analyze
+  -> lưu video vào app/static/uploads/
+  -> DeepfakeInferenceService.analyze_video()
+  -> sample frame từ video
+  -> detect/crop mặt bằng FaceDetector
+  -> lấy đủ num_frames, ví dụ 10 frame
+  -> transform giống validation
+  -> load checkpoint
+  -> model predict
+  -> sigmoid ra fake_probability
+  -> so threshold 0.5
+  -> trả JSON kết quả
+
+  Output thực tế gồm:
+
+  verdict: Fake hoặc Real
+  fake_probability
+  real_probability
+  confidence
+  keyframes đã crop
+  metadata video
+  checkpoint đang dùng
+  thời gian xử lý
+
+  Web UI dùng các route như:
+
+  /
+   /dashboard
+   /api/health
+   /api/analyze
+   /api/session/<session_id>
+
+  Tóm tắt toàn bộ luồng
+
+  1. Video dataset gốc
+     ↓
+  2. Preprocess: sample frame -> detect face -> align/crop -> save ảnh mặt
+     ↓
+  3. Dataset loader: mỗi video = chuỗi frame khuôn mặt
+     ↓
+  4. Model: EfficientNet trích feature từng frame
+     ↓
+  5. Transformer học quan hệ thời gian
+     ↓
+  6. Classifier dự đoán Real/Fake
+     ↓
+  7. Train + validation -> lưu checkpoint tốt nhất
+     ↓
+  8. Evaluate trên test set -> metrics/report
+     ↓
+  9. Flask app: upload video -> preprocess in-memory -> predict -> trả kết quả JSON/UI

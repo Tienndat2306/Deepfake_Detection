@@ -1,0 +1,42 @@
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-desktop h-20 border-b border-white/10 backdrop-blur-xl bg-background/80 shadow-[0_0_15px_rgba(0,209,255,0.1)]">
+    <div class="flex items-center gap-8">
+        <h1 class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">
+            DEEPFAKE-DETECTION
+        </h1>
+        <div class="hidden md:flex items-center gap-6">
+            <nav class="flex gap-6">
+                <a class="font-label-md text-label-md {% if active_page == 'dashboard' %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary-container{% endif %} py-1" 
+                   href="{{ url_for('dashboard') }}">
+                    Dashboard
+                </a>
+                <a class="font-label-md text-label-md {% if active_page == 'forensics' %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary-container{% endif %} py-1" 
+                   href="{{ url_for('forensics') }}">
+                    Forensics
+                </a>
+                <a class="font-label-md text-label-md {% if active_page == 'deepscan' %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary-container{% endif %} py-1" 
+                   href="{{ url_for('deepscan') }}">
+                    Deepscan
+                </a>
+                <a class="font-label-md text-label-md {% if active_page == 'network' %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary-container{% endif %} py-1" 
+                   href="{{ url_for('network') }}">
+                    Network
+                </a>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="flex items-center gap-6">
+        <div class="relative hidden lg:block">
+            <input class="bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-4 py-2 w-64 focus:outline-none focus:ring-1 focus:ring-primary-container transition-all" 
+                   type="text" placeholder="Search hash or metadata...">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+            <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+            <div class="h-8 w-8 rounded-full overflow-hidden border border-primary/30">
+                <img alt="Profile" src="{{ url_for('static', filename='images/avatar.jpg') }}">
+            </div>
+        </div>
+    </div>
+</header>

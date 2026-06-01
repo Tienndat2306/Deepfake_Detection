@@ -1,0 +1,34 @@
+<aside class="fixed left-0 top-20 h-[calc(100vh-80px)] w-64 flex flex-col py-6 border-r border-white/10 backdrop-blur-2xl bg-surface-container-lowest/90 z-40">
+    <div class="px-6 mb-8">
+        <div class="flex items-center gap-2 mb-1">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+            <span class="font-headline-md text-headline-md font-bold text-primary">SECURE ANALYSIS</span>
+        </div>
+        <p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Vigilance Active</p>
+    </div>
+    
+    <nav class="flex-1 space-y-1 px-4">
+        {% set nav_items = [
+            ('dashboard', 'Dashboard', 'dashboard'),
+            ('forensics', 'Forensics', 'android_fingerprint'),
+            ('deepscan', 'Deepscan', 'radar'),
+            ('archive', 'Archive', 'history'),
+            ('network', 'Network', 'hub')
+        ] %}
+        
+        {% for route, label, icon in nav_items %}
+        <a href="{{ url_for(route) }}" 
+           class="flex items-center gap-4 px-4 py-3 {% if active_page == route %}text-primary bg-primary/10 border-r-2 border-primary{% else %}text-on-surface-variant opacity-70 hover:bg-white/5 hover:text-primary hover:opacity-100{% endif %} font-label-md text-label-md transition-all">
+            <span class="material-symbols-outlined">{{ icon }}</span>
+            <span>{{ label }}</span>
+        </a>
+        {% endfor %}
+    </nav>
+    
+    <div class="mt-auto px-4">
+        <button class="w-full bg-primary-container text-on-primary-container py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all cyber-glow">
+            <span class="material-symbols-outlined">add_circle</span>
+            NEW SCAN
+        </button>
+    </div>
+</aside>

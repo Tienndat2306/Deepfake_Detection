@@ -1,0 +1,96 @@
+# Cau hinh model chinh cho pipeline EfficientNet + Transformer
+model:
+  name: "DeepfakeDetector_v1"
+
+  efficientnet:
+    model_name: "efficientnet_b4"   # timm model name
+    pretrained: true
+    dropout: 0.3
+    freeze_at_start: true           # freeze backbone luc dau
+    unfreeze_last_n_blocks: 2       # mo khoa 3 block cuoi sau warmup
+    unfreeze_after_epoch: 7         # epoch bat dau unfreeze
+
+  transformer:
+    d_model: 512
+    nhead: 8
+    num_layers: 4
+    dropout: 0.3
+    dim_feedforward: 2048           # = d_model * 4
+    norm_first: true                # Pre-LayerNorm, on dinh hon Post-LN
+    activation: "gelu"              # gelu thuong tot hon relu cho transformer
+
+  positional_encoding:
+    type: "learnable_sinusoidal"    # khoi tao bang sinusoidal, fine-tune duoc
+    max_len: 32                     # lon hon num_frames de generalize
+    dropout: 0.1
+
+  input:
+    img_size: 256
+    num_frames: 10
+    channels: 3
+
+  cls_token:
+    init_std: 0.02                  # std khoi tao CLS token
+
+  # Cac key duoi day giu tuong thich voi train/evaluate script hien tai.
+  image_size: 256                   # alias tu input.img_size
+  num_frames: 10                    # alias tu input.num_frames
+  feat_dim: 1792                    # EfficientNet-B4 output feature dim
+
+# Preset cau hinh de switch nhanh theo tai nguyen.
+model_variants:
+  lightweight:
+    efficientnet:
+      model_name: "efficientnet_b0"
+      pretrained: true
+      dropout: 0.3
+      freeze_at_start: true
+      unfreeze_last_n_blocks: 2
+      unfreeze_after_epoch: 3
+    transformer:
+      d_model: 256
+      nhead: 8
+      num_layers: 2
+      dropout: 0.3
+      dim_feedforward: 1024         # = 256 * 4
+      norm_first: true
+      activation: "gelu"
+    positional_encoding:
+      type: "learnable_sinusoidal"
+      max_len: 32
+      dropout: 0.1
+    input:
+      img_size: 256
+      num_frames: 10
+      channels: 3
+    cls_token:
+      init_std: 0.02
+    feat_dim: 1280                  # EfficientNet-B0 output feature dim
+
+  full:
+    efficientnet:
+      model_name: "efficientnet_b4"
+      pretrained: true
+      dropout: 0.3
+      freeze_at_start: true
+      unfreeze_last_n_blocks: 3
+      unfreeze_after_epoch: 5
+    transformer:
+      d_model: 512
+      nhead: 8
+      num_layers: 4
+      dropout: 0.3
+      dim_feedforward: 2048         # = 512 * 4
+      norm_first: true
+      activation: "gelu"
+    positional_encoding:
+      type: "learnable_sinusoidal"
+      max_len: 32
+      dropout: 0.1
+    input:
+      img_size: 256
+      num_frames: 10
+      channels: 3
+    cls_token:
+      init_std: 0.02
+    feat_dim: 1792                  # EfficientNet-B4 output feature dim

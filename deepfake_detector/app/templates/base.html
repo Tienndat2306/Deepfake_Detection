@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Deepfake Detector{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <h1 class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">DEEPFAKE-DETECTION</h1>
+        <nav class="topnav">
+            <a href="{{ url_for('web.dashboard') }}" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="{{ url_for('web.forensics') }}" class="{% if active_page == 'forensics' %}active{% endif %}">Forensics</a>
+            <a href="{{ url_for('web.deepscan') }}" class="{% if active_page == 'deepscan' %}active{% endif %}">Deepscan</a>
+            <a href="{{ url_for('web.archive') }}" class="{% if active_page == 'archive' %}active{% endif %}">Archive</a>
+        </nav>
+    </header>
+
+    <main class="shell">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

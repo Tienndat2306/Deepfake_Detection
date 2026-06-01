@@ -1,0 +1,34 @@
+# Core deep learning stack
+torch>=2.2
+torchvision>=0.17
+timm>=0.9.16
+
+# Data processing / augmentation
+numpy>=1.24
+pandas>=2.0
+albumentations>=1.4.0
+# Dung headless de chay tot tren server/container (khong can GUI libs)
+opencv-python-headless>=4.8.0
+Pillow>=10.0
+PyYAML>=6.0
+
+# Face preprocessing
+mediapipe>=0.10.14
+
+# Training / evaluation
+scikit-learn>=1.3
+matplotlib>=3.7
+seaborn>=0.13
+tqdm>=4.66
+tabulate>=0.9
+
+# Optional (used by data/datamodule.py)
+pytorch-lightning>=2.2
+
+# Notebook convenience (IPython.display)
+ipython>=8.0
+ipykernel>=6.29
+jupyterlab>=4.2
+
+# Run app
+python app.py

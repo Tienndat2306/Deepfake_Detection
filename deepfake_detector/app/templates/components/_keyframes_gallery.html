@@ -1,0 +1,38 @@
+<div>
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+            <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
+                Extracted Keyframes
+            </h3>
+            <span class="text-xs text-outline bg-surface-container-high px-2 py-0.5">
+                {{ keyframes|length }} Segments Identified
+            </span>
+        </div>
+        <button class="text-primary font-label-sm text-label-sm flex items-center gap-1 hover:underline">
+            View All Frames <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </button>
+    </div>
+    
+    <div class="flex gap-4 overflow-x-auto pb-4 scroll-smooth">
+        {% for frame in keyframes %}
+        <div class="flex-none w-48 group cursor-pointer {% if frame.has_artifact %}border border-error/50{% endif %}">
+            <div class="aspect-video glass-panel overflow-hidden relative mb-2">
+                <img src="{{ frame.thumbnail_url }}" 
+                     alt="Keyframe {{ frame.id }}" 
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 {% if frame.has_artifact %}grayscale{% endif %}">
+                <div class="absolute inset-0 {% if frame.has_artifact %}bg-error/20{% else %}bg-primary/20{% endif %} opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white">
+                        {% if frame.has_artifact %}warning{% else %}zoom_in{% endif %}
+                    </span>
+                </div>
+            </div>
+            <p class="font-label-sm text-[10px] {% if frame.has_artifact %}text-error{% else %}text-outline{% endif %} flex justify-between">
+                <span>F: {{ frame.frame_number }}</span>
+                <span class="{% if not frame.has_artifact %}text-primary{% endif %}">
+                    {% if frame.has_artifact %}ALERT{% else %}{{ frame.confidence }}%{% endif %}
+                </span>
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
