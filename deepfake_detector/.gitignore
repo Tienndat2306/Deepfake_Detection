@@ -1,0 +1,4 @@
+*.pth
+*.pt
+*.h5
+deepfake_detector/checkpoints/
