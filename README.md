@@ -81,20 +81,36 @@ The preprocessing pipeline converts raw videos into face-crop frame sequences:
 - aligns and crops faces;
 - stores output as image folders grouped by video ID.
 
-Expected processed dataset structure:
+## Dataset
 
-```text
-dataset/
-|-- train/
-|   |-- Real/<video_id>/*.jpg
-|   `-- Fake/<video_id>/*.jpg
-|-- val/
-|   |-- Real/<video_id>/*.jpg
-|   `-- Fake/<video_id>/*.jpg
-`-- test/
-    |-- Real/<video_id>/*.jpg
-    `-- Fake/<video_id>/*.jpg
-```
+  This project uses a processed face-crop dataset for deepfake video detection. Each original video is converted into a folder of sampled face frames, and
+  Dataset download link:
+
+  [Download Processed Dataset](https://drive.google.com/file/d/1lvF5k03NnnbD6QouUDCGSr-shstcV69o/view?usp=sharing)
+
+  After downloading and extracting the dataset, place it in the project directory with the following structure:
+  deepfake_detector/
+  `-- dataset/
+      |-- train/
+      |   |-- Real/<video_id>/*.jpg
+      |   `-- Fake/<video_id>/*.jpg
+      |-- val/
+      |   |-- Real/<video_id>/*.jpg
+      |   `-- Fake/<video_id>/*.jpg
+      `-- test/
+          |-- Real/<video_id>/*.jpg
+          `-- Fake/<video_id>/*.jpg
+
+  The model does not train directly on raw videos. Instead, videos are first preprocessed into aligned face crops using MediaPipe BlazeFace. During training
+  and evaluation, the dataset loader samples multiple frames from each video folder and feeds them as a temporal sequence to the model.
+
+  Dataset notes:
+
+  - Label Real represents authentic videos.
+  - Label Fake represents manipulated/deepfake videos.
+  - Each <video_id> folder contains sampled face-crop frames from one video.
+  - Train/validation/test splits are organized at the video level to reduce data leakage.
+  - Large dataset files are not committed to GitHub; they are provided through external storage.
 
 ### 2. Training
 
