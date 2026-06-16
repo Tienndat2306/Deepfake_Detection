@@ -30,5 +30,6 @@ ipython>=8.0
 ipykernel>=6.29
 jupyterlab>=4.2
 
-# Run app
-python app.py
+# Web demo
+Flask>=3.0
+Werkzeug>=3.0
