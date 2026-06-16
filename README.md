@@ -90,16 +90,18 @@ The preprocessing pipeline converts raw videos into face-crop frame sequences:
 
   After downloading and extracting the dataset, place it in the project directory with the following structure:
   deepfake_detector/
-  `-- dataset/
-      |-- train/
-      |   |-- Real/<video_id>/*.jpg
-      |   `-- Fake/<video_id>/*.jpg
-      |-- val/
-      |   |-- Real/<video_id>/*.jpg
-      |   `-- Fake/<video_id>/*.jpg
-      `-- test/
-          |-- Real/<video_id>/*.jpg
-          `-- Fake/<video_id>/*.jpg
+  ```text
+dataset/
+|-- train/
+|   |-- Real/<video_id>/*.jpg
+|   `-- Fake/<video_id>/*.jpg
+|-- val/
+|   |-- Real/<video_id>/*.jpg
+|   `-- Fake/<video_id>/*.jpg
+`-- test/
+    |-- Real/<video_id>/*.jpg
+    `-- Fake/<video_id>/*.jpg
+```
 
   The model does not train directly on raw videos. Instead, videos are first preprocessed into aligned face crops using MediaPipe BlazeFace. During training
   and evaluation, the dataset loader samples multiple frames from each video folder and feeds them as a temporal sequence to the model.
