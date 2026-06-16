@@ -1,4 +1,45 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables and local config
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ML datasets, checkpoints, and generated reports
+dataset/
+checkpoints/
+reports/
+runs/
+outputs/
+logs/
 *.pth
 *.pt
 *.h5
-deepfake_detector/checkpoints/
+*.onnx
+
+# Flask/runtime uploads
+app/static/uploads/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.log
