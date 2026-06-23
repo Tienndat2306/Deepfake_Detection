@@ -9,6 +9,8 @@ End-to-end deepfake video detection system built with PyTorch. The project cover
 - Includes preprocessing, training, evaluation, inference, and web demo modules.
 - Supports forensic evaluation metrics such as ROC-AUC, EER, Average Precision, F1-score, confusion matrix, ROC curve, and failure analysis.
 - Includes a trained checkpoint with validation AUC around `0.976999` in the current local project state.
+![Uploading image.png…]()
+
 
 ## Project Status
 
