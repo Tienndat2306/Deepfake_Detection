@@ -10,6 +10,14 @@ End-to-end deepfake video detection system built with PyTorch. The project cover
 - Supports forensic evaluation metrics such as ROC-AUC, EER, Average Precision, F1-score, confusion matrix, ROC curve, and failure analysis.
 - Includes a trained checkpoint with validation AUC around `0.976999` in the current local project state.
 
+## Model Training Process
+
+<p align="center">
+  <img src="images/deepfake-training-process.png" width="900">
+</p>
+
+*Training performance of the EfficientNet-B4 + Transformer model, including Loss, AUC, Early Stopping, and overfitting analysis.*
+
 ## Project Status
 
 This repository is suitable as a portfolio/CV project after adding external links for dataset and model artifacts. Large assets such as datasets, checkpoints, uploaded videos, and generated reports should not be committed directly to GitHub.
