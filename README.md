@@ -81,9 +81,16 @@ The preprocessing pipeline converts raw videos into face-crop frame sequences:
 - aligns and crops faces;
 - stores output as image folders grouped by video ID.
 
-Expected processed dataset structure:
+## Dataset
 
-```text
+  This project uses a processed face-crop dataset for deepfake video detection. Each original video is converted into a folder of sampled face frames, and
+  Dataset download link:
+
+  [Download Processed Dataset](https://drive.google.com/file/d/1lvF5k03NnnbD6QouUDCGSr-shstcV69o/view?usp=sharing)
+
+  After downloading and extracting the dataset, place it in the project directory with the following structure:
+  deepfake_detector/
+  ```text
 dataset/
 |-- train/
 |   |-- Real/<video_id>/*.jpg
@@ -95,6 +102,17 @@ dataset/
     |-- Real/<video_id>/*.jpg
     `-- Fake/<video_id>/*.jpg
 ```
+
+  The model does not train directly on raw videos. Instead, videos are first preprocessed into aligned face crops using MediaPipe BlazeFace. During training
+  and evaluation, the dataset loader samples multiple frames from each video folder and feeds them as a temporal sequence to the model.
+
+  Dataset notes:
+
+  - Label Real represents authentic videos.
+  - Label Fake represents manipulated/deepfake videos.
+  - Each <video_id> folder contains sampled face-crop frames from one video.
+  - Train/validation/test splits are organized at the video level to reduce data leakage.
+  - Large dataset files are not committed to GitHub; they are provided through external storage.
 
 ### 2. Training
 
@@ -336,50 +354,3 @@ Suggested CV bullet points:
 - Matplotlib / Seaborn
 - Flask
 - Jinja2
-
-## Recommended GitHub Cleanup Before Publishing
-
-Before pushing this repository publicly:
-
-- Remove `__pycache__/` and `*.pyc` files.
-- Do not commit `dataset/`.
-- Do not commit large `.pth` checkpoints directly unless using Git LFS.
-- Do not commit runtime uploads from `app/static/uploads/`.
-- Add links to external checkpoint and dataset locations.
-- Add final evaluation reports under `reports/`.
-- Add screenshots under `docs/images/`.
-
-Recommended `.gitignore` entries:
-
-```gitignore
-__pycache__/
-*.pyc
-.venv/
-dataset/
-checkpoints/
-reports/
-app/static/uploads/
-*.pth
-*.pt
-*.h5
-```
-
-## Limitations
-
-- Performance depends strongly on face detection quality and dataset split quality.
-- The current web inference threshold is `0.5`; production use should tune the threshold on a validation set.
-- The model is intended for research and portfolio demonstration, not for high-stakes forensic decision-making without additional validation.
-- Generalization should be tested on external datasets, unseen identities, and videos with compression, blur, occlusion, and lighting variation.
-
-## Next Improvements
-
-- Add unit tests for dataset loading, model forward pass, metric computation, and API health checks.
-- Add Dockerfile or environment setup guide with exact Python/CUDA versions.
-- Add model card with training data, metrics, limitations, and ethical considerations.
-- Add reproducible evaluation reports and screenshots.
-- Add CI workflow for linting and lightweight tests.
-- Add configuration through environment variables for web inference.
-
-## License
-
-Add a license before publishing, for example MIT for portfolio/open-source use, or a more restrictive license if the dataset/model artifact has usage constraints.
