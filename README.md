@@ -166,7 +166,7 @@ The Flask app provides:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/deepfake_detector.git
+git clone https://github.com/Tienndat2306/deepfake_detector.git
 cd deepfake_detector
 ```
 
