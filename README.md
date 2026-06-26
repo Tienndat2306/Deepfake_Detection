@@ -307,13 +307,13 @@ For a public GitHub repository, add a reproducible evaluation table after runnin
 
 | Metric | Value |
 |---|---:|
-| ROC-AUC | TBD |
-| EER | TBD |
+| ROC-AUC | 0.9742 |
+| EER | 0.0891 |
 | Average Precision | TBD |
-| Accuracy | TBD |
-| F1-score | TBD |
-| Precision | TBD |
-| Recall | TBD |
+| Accuracy | 91.3% |
+| F1-score | 92.8% |
+| Precision | 93.6% |
+| Recall | 92.1% |
 
 Also add:
 
