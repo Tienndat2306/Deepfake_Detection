@@ -6,6 +6,35 @@
 ![ML](https://img.shields.io/badge/ML-scikit--learn%201.7-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+## Table of Contents
+
+- [Highlights](#highlights)
+- [Model Training Process](#model-training-process)
+- [Project Status](#project-status)
+- [Architecture](#architecture)
+- [Repository Structure](#repository-structure)
+- [Main Features](#main-features)
+  - [1. Video Preprocessing](#1-video-preprocessing)
+  - [2. Training](#2-training)
+  - [3. Evaluation](#3-evaluation)
+  - [4. Web Demo](#4-web-demo)
+- [Dataset](#dataset)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [Preprocess Videos](#preprocess-videos)
+  - [Train](#train)
+  - [Evaluate](#evaluate)
+  - [Run Web Demo](#run-web-demo)
+- [Results](#results)
+- [Screenshots](#screenshots)
+- [CV Summary](#cv-summary)
+- [Tech Stack](#tech-stack)
+- [Recommended GitHub Cleanup Before Publishing](#recommended-github-cleanup-before-publishing)
+- [Limitations](#limitations)
+- [Next Improvements](#next-improvements)
+- [License](#license)
+
 End-to-end deepfake video detection system built with PyTorch. The project covers the full workflow from video preprocessing and face extraction to model training, evaluation, and a Flask web demo for single-video inference.
 
 ## Highlights
