@@ -315,31 +315,13 @@ For a public GitHub repository, add a reproducible evaluation table after runnin
 | Precision | 93.6% |
 | Recall | 92.1% |
 
-Also add:
-
-- ROC curve image;
-- confusion matrix image;
-- representative false positives and false negatives;
-- dataset size and split statistics.
-
 ## Screenshots
 
-Add screenshots before publishing:
+Dashboard
 
-```text
-docs/images/dashboard.png
-docs/images/result_fake.png
-docs/images/result_real.png
-docs/images/confusion_matrix.png
-docs/images/roc_curve.png
-```
-
-Suggested README embed:
-
-```markdown
-![Dashboard](docs/images/dashboard.png)
-![ROC Curve](docs/images/roc_curve.png)
-```
+<p align="center">
+  <img src="images/dashboard.png" width="900">
+</p>
 
 ## CV Summary
 
