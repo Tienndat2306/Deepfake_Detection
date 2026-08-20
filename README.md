@@ -1,5 +1,9 @@
 # Deepfake Video Detector
 
+![Python](https://img.shields.io/badge/Python-3.8+-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 End-to-end deepfake video detection system built with PyTorch. The project covers the full workflow from video preprocessing and face extraction to model training, evaluation, and a Flask web demo for single-video inference.
 
 ## Highlights
@@ -309,7 +313,6 @@ For a public GitHub repository, add a reproducible evaluation table after runnin
 |---|---:|
 | ROC-AUC | 0.9742 |
 | EER | 0.0891 |
-| Average Precision | TBD |
 | Accuracy | 91.3% |
 | F1-score | 92.8% |
 | Precision | 93.6% |
