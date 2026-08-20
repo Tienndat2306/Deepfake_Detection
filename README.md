@@ -362,8 +362,21 @@ Suggested CV bullet points:
 - timm
 - OpenCV
 - MediaPipe
-- Albumentations
-- scikit-learn
-- Matplotlib / Seaborn
-- Flask
-- Jinja2
+
+## License
+
+This project is licensed under the MIT License.
+
+**You are free to:**
+- Use this project for commercial or private purposes
+- Modify and distribute the code
+- Include this software in proprietary applications
+
+**You must:**
+- Include a copy of the license and copyright notice
+- State significant changes made to the code
+
+**You cannot:**
+- Hold the author liable for any claim, damages, or other liability
+- Use the author's name to promote products derived from this software
+
