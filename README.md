@@ -2,6 +2,8 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red)
+![Framework](https://img.shields.io/badge/Framework-Flask%203.1-green)
+![ML](https://img.shields.io/badge/ML-scikit--learn%201.7-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 End-to-end deepfake video detection system built with PyTorch. The project covers the full workflow from video preprocessing and face extraction to model training, evaluation, and a Flask web demo for single-video inference.
